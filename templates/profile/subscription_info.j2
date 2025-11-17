@@ -1,0 +1,5 @@
+{%- if is_premium -%}
+{%- include 'subscription_info_premium.j2' -%}
+{%- else -%}
+{%- include 'subscription_info_free.j2' -%}
+{%- endif -%}

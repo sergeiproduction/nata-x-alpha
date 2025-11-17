@@ -1,0 +1,17 @@
+Календарь на месяц
+{%- for date_data in dates %}
+
+{{ date_data.date }}
+{%- for instance in date_data.instances %}
+{{ instance.name }} {{ instance.icon }}
+{%- for report in instance.reports %}
+- {{ report }}
+{%- endfor %}
+{%- if not loop.last %}
+{% endif %}
+{%- endfor %}
+{%- if not loop.last %}
+
+
+{%- endif %}
+{%- endfor %}

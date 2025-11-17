@@ -1,0 +1,10 @@
+Чек-лист: {{ checklist.name }}
+
+{{ checklist.description }}
+
+Прогресс {{ progress_percentage }}%
+{{ progress_bar }}
+
+{% for item in items %}
+{{ loop.index }}. {{ item.content }}
+{% endfor %}

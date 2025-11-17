@@ -1,0 +1,5 @@
+{{ date }}
+{% for instance in instances %}{{ instance.name }} {{ instance.icon }}
+{% for report in instance.reports %}- {{ report }}
+{% endfor %}
+{% endfor %}

@@ -1,0 +1,10 @@
+👉 Нажмите номер необходимого пункта на клавиатуре
+
+I этап:
+{% for item in surveys %}{{ item.index }}. {{ item.title }}
+{% endfor %}
+{% if not has_premium_access and premium_surveys %}
+💎 С премиумом доступно также:
+{% for item in premium_surveys %}– {{ item.title }}
+{% endfor %}
+{% endif %}

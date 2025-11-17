@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика выплат сотрудникам</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        secondary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .section-header {
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+            border-radius: 2px;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+        .status-badge.paid {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-badge.planned {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+            .section-header::after {
+                width: 40px;
+                height: 3px;
+            }
+            .status-badge {
+                padding: 0.15rem 0.5rem;
+                font-size: 0.65rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .chart-container {
+                height: 200px;
+            }
+            .section-header {
+                padding-bottom: 10px;
+            }
+            .section-header::after {
+                width: 30px;
+                height: 2px;
+            }
+            .status-badge {
+                padding: 0.1rem 0.4rem;
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-2 md:p-4 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-6 md:mb-8">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-2 md:mb-4">Аналитика выплат сотрудникам</h1>
+            <p class="text-sm md:text-lg text-gray-600 max-w-3xl mx-auto px-2">Комплексный отчет по заработной плате, налогам и взносам сотрудников</p>
+        </header>
+        
+        <!-- Блок общих затрат компании -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-5 md:p-6 mb-6 md:mb-8 text-white">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h2 class="text-xl md:text-2xl font-bold">Общие затраты компании</h2>
+                    <p class="text-blue-100 text-sm md:text-base">Суммарные расходы на персонал</p>
+                </div>
+                <div class="text-2xl md:text-3xl lg:text-4xl font-bold">
+                    <span id="total-company-cost">0</span> ₽
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 card-hover border-t-4 border-primary-500">
+                <div class="flex items-center">
+                    <div class="p-2 md:p-3 rounded-full bg-blue-100 text-blue-600 mr-3 md:mr-4">
+                        <i class="fas fa-users text-lg md:text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-xs md:text-sm">Всего сотрудников</p>
+                        <p class="text-xl md:text-2xl font-bold text-gray-800" id="total-employees">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 card-hover border-t-4 border-secondary-500">
+                <div class="flex items-center">
+                    <div class="p-2 md:p-3 rounded-full bg-green-100 text-green-600 mr-3 md:mr-4">
+                        <i class="fas fa-money-bill-wave text-lg md:text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-xs md:text-sm">Общие выплаты</p>
+                        <p class="text-xl md:text-2xl font-bold text-gray-800" id="total-payments">0 ₽</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 card-hover border-t-4 border-purple-500">
+                <div class="flex items-center">
+                    <div class="p-2 md:p-3 rounded-full bg-purple-100 text-purple-600 mr-3 md:mr-4">
+                        <i class="fas fa-calculator text-lg md:text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-xs md:text-sm">Налоги и взносы</p>
+                        <p class="text-xl md:text-2xl font-bold text-gray-800" id="total-taxes">0 ₽</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Дорожная карта платежей -->
+        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 card-hover">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 section-header">Дорожная карта платежей</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 text-xs md:text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 md:px-6 py-2 md:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Сотрудник</th>
+                            <th class="px-3 md:px-6 py-2 md:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Месяц выплаты</th>
+                            <th class="px-3 md:px-6 py-2 md:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
+                            <th class="px-3 md:px-6 py-2 md:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="payments-timeline">
+                        <!-- Данные будут заполнены из JSON -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+            <!-- График динамики затрат по месяцам -->
+            <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 card-hover">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 section-header">Динамика затрат на ЗП</h2>
+                <div class="chart-container">
+                    <canvas id="salary-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Распределение налогов -->
+            <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 card-hover">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 section-header">Распределение налогов</h2>
+                <div class="chart-container">
+                    <canvas id="tax-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Выплаты по сотрудникам -->
+        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 card-hover">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 section-header">Детализация выплат по сотрудникам</h2>
+            <p class="text-gray-600 text-sm md:text-base mb-4 md:mb-6">Информация за последний месяц</p>
+            <div id="employee-details" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <!-- Карточки будут заполнены из JSON -->
+            </div>
+        </div>
+
+        <!-- Итоги по налогам -->
+        <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 card-hover">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 section-header">Итоги по налогам и взносам</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div>
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-700 mb-3 md:mb-4">Сводка по выплатам</h3>
+                    <div class="space-y-3 md:space-y-4" id="tax-summary">
+                        <!-- Данные будут заполнены из JSON -->
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-700 mb-3 md:mb-4">Информация о налогах</h3>
+                    <div class="bg-blue-50 rounded-xl p-3 md:p-5 mb-4 md:mb-6">
+                        <h4 class="font-bold text-blue-800 mb-2 md:mb-3 flex items-center text-sm md:text-base">
+                            <i class="fas fa-building mr-2"></i> Налоги, уплачиваемые работодателем в СФР:
+                        </h4>
+                        <ul class="space-y-1 md:space-y-2 text-xs md:text-sm text-blue-700">
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-400 text-[0.5rem] md:text-xs mt-1.5 mr-1 md:mr-2"></i>
+                                <span><strong>30% от ФОТ:</strong> Обязательное пенсионное страхование (22%)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-400 text-[0.5rem] md:text-xs mt-1.5 mr-1 md:mr-2"></i>
+                                <span><strong>30% от ФОТ:</strong> Обязательное медицинское страхование (5.1%)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-400 text-[0.5rem] md:text-xs mt-1.5 mr-1 md:mr-2"></i>
+                                <span><strong>30% от ФОТ:</strong> Обязательное социальное страхование (2.9%)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-400 text-[0.5rem] md:text-xs mt-1.5 mr-1 md:mr-2"></i>
+                                <span><strong>0.2-8.5% от ФОТ:</strong> Страхование от несчастных случаев</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-50 rounded-xl p-3 md:p-5">
+                        <h4 class="font-bold text-red-800 mb-2 md:mb-3 flex items-center text-sm md:text-base">
+                            <i class="fas fa-user mr-2"></i> Налоги, удерживаемые из дохода сотрудника в ФНС:
+                        </h4>
+                        <ul class="space-y-1 md:space-y-2 text-xs md:text-sm text-red-700">
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-red-400 text-[0.5rem] md:text-xs mt-1.5 mr-1 md:mr-2"></i>
+                                <span><strong>13-22%:</strong> НДФЛ (зависит от суммы дохода)</span>
+                            </li>
+                        </ul>
+                        <div class="mt-3 md:mt-4 p-2 md:p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <p class="text-xs md:text-sm text-yellow-700 flex items-start">
+                                <i class="fas fa-exclamation-circle text-yellow-500 mt-0.5 mr-1 md:mr-2 text-xs"></i>
+                                Зарплата выплачивается 2 раза в месяц. Общие затраты на сотрудника включают оклад + все налоги и взносы.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Пример данных в формате JSON с зарплатами по месяцам
+        const payrollData = {
+            "insuranceRate": 0.002, // Тариф на страхование от несчастных случаев (0.2%)
+            "payments": [
+                // Январь 2025
+                {
+                    "employee": "Иванов Иван Иванович",
+                    "month": "2025-01",
+                    "salary": 80000,
+                    "status": "Выплачено"
+                },
+                {
+                    "employee": "Петрова Анна Сергеевна",
+                    "month": "2025-01",
+                    "salary": 65000,
+                    "status": "Выплачено"
+                },
+                {
+                    "employee": "Сидоров Алексей Владимирович",
+                    "month": "2025-01",
+                    "salary": 95000,
+                    "status": "Выплачено"
+                },
+                
+                // Февраль 2025
+                {
+                    "employee": "Иванов Иван Иванович",
+                    "month": "2025-02",
+                    "salary": 80000,
+                    "status": "Выплачено"
+                },
+                {
+                    "employee": "Петрова Анна Сергеевна",
+                    "month": "2025-02",
+                    "salary": 65000,
+                    "status": "Выплачено"
+                },
+                {
+                    "employee": "Сидоров Алексей Владимирович",
+                    "month": "2025-02",
+                    "salary": 95000,
+                    "status": "Выплачено"
+                },
+                
+                // Март 2025 (запланированные)
+                {
+                    "employee": "Иванов Иван Иванович",
+                    "month": "2025-03",
+                    "salary": 80000,
+                    "status": "Запланировано"
+                },
+                {
+                    "employee": "Петрова Анна Сергеевна",
+                    "month": "2025-03",
+                    "salary": 65000,
+                    "status": "Запланировано"
+                },
+                {
+                    "employee": "Сидоров Алексей Владимирович",
+                    "month": "2025-03",
+                    "salary": 95000,
+                    "status": "Запланировано"
+                },
+                
+                // Апрель 2025 (запланированные)
+                {
+                    "employee": "Иванов Иван Иванович",
+                    "month": "2025-04",
+                    "salary": 82000,
+                    "status": "Запланировано"
+                },
+                {
+                    "employee": "Петрова Анна Сергеевна",
+                    "month": "2025-04",
+                    "salary": 70000,
+                    "status": "Запланировано"
+                }
+            ]
+        };
+
+        // Функция для расчета налогов
+        function calculateTaxes(salary) {
+            // НДФЛ по пятиступенчатой шкале (упрощенно)
+            let ndfl = 0;
+            if (salary <= 150000) {
+                ndfl = salary * 0.13;
+            } else if (salary <= 300000) {
+                ndfl = 150000 * 0.13 + (salary - 150000) * 0.15;
+            } else if (salary <= 600000) {
+                ndfl = 150000 * 0.13 + 150000 * 0.15 + (salary - 300000) * 0.18;
+            } else if (salary <= 1000000) {
+                ndfl = 150000 * 0.13 + 150000 * 0.15 + 300000 * 0.18 + (salary - 600000) * 0.20;
+            } else {
+                ndfl = 150000 * 0.13 + 150000 * 0.15 + 300000 * 0.18 + 400000 * 0.20 + (salary - 1000000) * 0.22;
+            }
+
+            // Страховые взносы (упрощенно)
+            const ops = salary * 0.22; // Пенсионное страхование
+            const oms = salary * 0.051; // Медицинское страхование
+            const oss = salary * 0.029; // Социальное страхование
+            const insurance = salary * payrollData.insuranceRate; // Страхование от несчастных случаев (берется из JSON)
+
+            return {
+                ndfl: Math.round(ndfl),
+                ops: Math.round(ops),
+                oms: Math.round(oms),
+                oss: Math.round(oss),
+                insurance: Math.round(insurance),
+                total: Math.round(ndfl + ops + oms + oss + insurance),
+                employerTotal: Math.round(ops + oms + oss + insurance), // Только взносы работодателя
+                employeeNet: Math.round(salary - ndfl) // На руки сотруднику
+            };
+        }
+
+        // Заполнение дорожной карты с группировкой по сотрудникам
+        function renderPaymentsTimeline() {
+            const container = document.getElementById('payments-timeline');
+            container.innerHTML = '';
+            
+            // Группировка по сотрудникам
+            const groupedPayments = {};
+            payrollData.payments.forEach(payment => {
+                if (!groupedPayments[payment.employee]) {
+                    groupedPayments[payment.employee] = [];
+                }
+                groupedPayments[payment.employee].push(payment);
+            });
+            
+            // Сортировка сотрудников по алфавиту
+            const sortedEmployees = Object.keys(groupedPayments).sort();
+            
+            sortedEmployees.forEach(employee => {
+                const payments = groupedPayments[employee];
+                
+                // Создание строки для сотрудника
+                const employeeRow = document.createElement('tr');
+                employeeRow.className = 'bg-gray-50';
+                employeeRow.innerHTML = `
+                    <td class="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap font-bold text-gray-900" colspan="4">
+                        <i class="fas fa-user mr-1 md:mr-2 text-gray-500 text-xs md:text-sm"></i> 
+                        <span class="text-xs md:text-sm">${employee}</span>
+                    </td>
+                `;
+                container.appendChild(employeeRow);
+                
+                // Добавление строк с выплатами
+                payments.forEach(payment => {
+                    const date = new Date(payment.month + '-01');
+                    const monthYear = date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+                    
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-gray-500 pl-6 md:pl-12">
+                            <i class="fas fa-calendar-alt text-gray-400 mr-1 md:mr-2 text-xs"></i>
+                        </td>
+                        <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap text-gray-700 text-xs md:text-sm">${monthYear}</td>
+                        <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap font-medium text-gray-900 text-xs md:text-sm">${payment.salary.toLocaleString('ru-RU')} ₽</td>
+                        <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
+                            <span class="status-badge ${payment.status === 'Выплачено' ? 'paid' : 'planned'}">
+                                ${payment.status === 'Выплачено' ? '<i class="fas fa-check-circle mr-0.5 text-xs"></i>' : '<i class="fas fa-clock mr-0.5 text-xs"></i>'} 
+                                <span class="text-[0.6rem] md:text-xs">${payment.status}</span>
+                            </span>
+                        </td>
+                    `;
+                    container.appendChild(row);
+                });
+            });
+        }
+
+        // Создание графика динамики затрат
+        function renderSalaryChart() {
+            const ctx = document.getElementById('salary-chart').getContext('2d');
+            
+            // Группировка по месяцам
+            const monthlyData = {};
+            payrollData.payments.forEach(payment => {
+                const month = payment.month; // YYYY-MM
+                if (!monthlyData[month]) {
+                    monthlyData[month] = 0;
+                }
+                monthlyData[month] += payment.salary;
+            });
+            
+            const months = Object.keys(monthlyData).sort();
+            const values = months.map(month => monthlyData[month]);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months.map(m => {
+                        const date = new Date(m + '-01');
+                        return date.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' });
+                    }),
+                    datasets: [{
+                        label: 'Затраты на ЗП',
+                        data: values,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        borderWidth: 2,
+                        borderRadius: 4,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#1e40af',
+                            bodyColor: '#374151',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.parsed.y.toLocaleString('ru-RU')} ₽`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('ru-RU') + ' ₽';
+                                },
+                                color: '#6b7280',
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Создание карточек сотрудников (информация за последний месяц)
+        function renderEmployeeDetails() {
+            const container = document.getElementById('employee-details');
+            container.innerHTML = '';
+            
+            // Группировка выплат по сотрудникам
+            const employeePayments = {};
+            payrollData.payments.forEach(payment => {
+                if (!employeePayments[payment.employee]) {
+                    employeePayments[payment.employee] = [];
+                }
+                employeePayments[payment.employee].push(payment);
+            });
+            
+            // Определение последнего месяца
+            const allMonths = payrollData.payments.map(p => p.month);
+            const lastMonth = allMonths.sort().pop();
+            
+            // Создание карточек для каждого сотрудника (только за последний месяц)
+            Object.keys(employeePayments).forEach(employeeName => {
+                // Найти выплату за последний месяц
+                const payments = employeePayments[employeeName];
+                const latestPayment = payments.find(p => p.month === lastMonth) || payments[payments.length - 1];
+                
+                if (latestPayment) {
+                    const taxes = calculateTaxes(latestPayment.salary);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-md p-3 md:p-5 border border-gray-100 card-hover';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-3 md:mb-4">
+                            <h3 class="font-bold text-gray-800 text-sm md:text-base">${employeeName}</h3>
+                            <span class="status-badge ${latestPayment.status === 'Выплачено' ? 'paid' : 'planned'}">
+                                <span class="text-[0.6rem] md:text-xs">${latestPayment.status}</span>
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3 md:mb-4">
+                            <p class="text-gray-600 text-xs md:text-sm">Месяц: 
+                                <span class="font-medium text-gray-800">
+                                    ${new Date(latestPayment.month + '-01').toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}
+                                </span>
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-2 md:space-y-3 text-xs md:text-sm">
+                            <div class="flex justify-between py-1.5 md:py-2 border-b border-gray-100">
+                                <span class="text-gray-600">Месячный оклад:</span>
+                                <span class="font-bold text-gray-800">${latestPayment.salary.toLocaleString('ru-RU')} ₽</span>
+                            </div>
+                            
+                            <div class="bg-red-50 rounded-lg p-2 md:p-3">
+                                <h4 class="font-semibold text-red-700 mb-1.5 md:mb-2 flex items-center text-xs md:text-sm">
+                                    <i class="fas fa-minus-circle mr-2"></i> Удержания (ФНС)
+                                </h4>
+                                <div class="flex justify-between text-xs">
+                                    <span>НДФЛ (${taxes.ndfl > latestPayment.salary * 0.15 ? '>15%' : '13%'}):</span>
+                                    <span class="font-medium text-red-600">-${taxes.ndfl.toLocaleString('ru-RU')} ₽</span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-blue-50 rounded-lg p-2 md:p-3">
+                                <h4 class="font-semibold text-blue-700 mb-1.5 md:mb-2 flex items-center text-xs md:text-sm">
+                                    <i class="fas fa-plus-circle mr-2"></i> Взносы работодателя (СФР)
+                                </h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="flex justify-between">
+                                        <span>Пенсионные взносы (22%):</span>
+                                        <span class="font-medium text-blue-600">+${taxes.ops.toLocaleString('ru-RU')} ₽</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Медицинские взносы (5.1%):</span>
+                                        <span class="font-medium text-blue-600">+${taxes.oms.toLocaleString('ru-RU')} ₽</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Социальные взносы (2.9%):</span>
+                                        <span class="font-medium text-blue-600">+${taxes.oss.toLocaleString('ru-RU')} ₽</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Страхование от НС (${payrollData.insuranceRate * 100}%):</span>
+                                        <span class="font-medium text-blue-600">+${taxes.insurance.toLocaleString('ru-RU')} ₽</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between py-1.5 md:py-2 border-t border-gray-200 font-semibold text-xs md:text-sm">
+                                <span>Итого налогов и взносов:</span>
+                                <span class="text-blue-600">+${taxes.employerTotal.toLocaleString('ru-RU')} ₽</span>
+                            </div>
+                            
+                            <div class="flex justify-between py-1.5 md:py-2 bg-green-50 rounded-lg px-2 md:px-3 font-bold text-xs md:text-sm">
+                                <span>Сотруднику на руки:</span>
+                                <span class="text-green-600">${taxes.employeeNet.toLocaleString('ru-RU')} ₽</span>
+                            </div>
+                            
+                            <div class="flex justify-between py-2 md:py-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg px-2 md:px-3 font-bold text-sm md:text-base">
+                                <span>Общие затраты на сотрудника:</span>
+                                <span class="text-blue-700">${(latestPayment.salary + taxes.employerTotal).toLocaleString('ru-RU')} ₽</span>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        // Создание диаграммы налогов
+        function renderTaxChart() {
+            const ctx = document.getElementById('tax-chart').getContext('2d');
+            
+            // Суммирование налогов по всем выплатам
+            let totalNdfl = 0;
+            let totalOps = 0;
+            let totalOms = 0;
+            let totalOss = 0;
+            let totalInsurance = 0;
+            
+            payrollData.payments.forEach(payment => {
+                const taxes = calculateTaxes(payment.salary);
+                totalNdfl += taxes.ndfl;
+                totalOps += taxes.ops;
+                totalOms += taxes.oms;
+                totalOss += taxes.oss;
+                totalInsurance += taxes.insurance;
+            });
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        'НДФЛ (ФНС)',
+                        'Пенсионные взносы (СФР)',
+                        'Медицинские взносы (СФР)',
+                        'Социальные взносы (СФР)',
+                        'Страхование от НС (СФР)'
+                    ],
+                    datasets: [{
+                        data: [totalNdfl, totalOps, totalOms, totalOss, totalInsurance],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(139, 92, 246, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(239, 68, 68)',
+                            'rgb(59, 130, 246)',
+                            'rgb(16, 185, 129)',
+                            'rgb(245, 158, 11)',
+                            'rgb(139, 92, 246)'
+                        ],
+                        borderWidth: 1,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 10,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#1e40af',
+                            bodyColor: '#374151',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.parsed * 100) / total);
+                                    return ` ${context.label}: ${context.parsed.toLocaleString('ru-RU')} ₽ (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '50%'
+                }
+            });
+        }
+
+        // Создание сводки по налогам
+        function renderTaxSummary() {
+            const container = document.getElementById('tax-summary');
+            container.innerHTML = '';
+            
+            // Суммирование всех данных
+            let totalSalary = 0;
+            let totalNdfl = 0;
+            let totalOps = 0;
+            let totalOms = 0;
+            let totalOss = 0;
+            let totalInsurance = 0;
+            let totalEmployeeNet = 0;
+            let totalEmployerCost = 0;
+            
+            payrollData.payments.forEach(payment => {
+                totalSalary += payment.salary;
+                const taxes = calculateTaxes(payment.salary);
+                totalNdfl += taxes.ndfl;
+                totalOps += taxes.ops;
+                totalOms += taxes.oms;
+                totalOss += taxes.oss;
+                totalInsurance += taxes.insurance;
+                totalEmployeeNet += taxes.employeeNet;
+                totalEmployerCost += (payment.salary + taxes.employerTotal);
+            });
+            
+            // Обновление статистических карточек
+            document.getElementById('total-employees').textContent = new Set(payrollData.payments.map(p => p.employee)).size;
+            document.getElementById('total-payments').textContent = totalSalary.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('total-taxes').textContent = (totalNdfl + totalOps + totalOms + totalOss + totalInsurance).toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('total-company-cost').textContent = totalEmployerCost.toLocaleString('ru-RU');
+            
+            const summaryItems = [
+                { label: 'Общий фонд оплаты труда', value: totalSalary, color: 'text-blue-600', icon: 'fas fa-wallet' },
+                { label: 'НДФЛ (удерживается из оклада, ФНС)', value: totalNdfl, color: 'text-red-600', icon: 'fas fa-user' },
+                { label: 'Пенсионные взносы (СФР)', value: totalOps, color: 'text-indigo-600', icon: 'fas fa-piggy-bank' },
+                { label: 'Медицинские взносы (СФР)', value: totalOms, color: 'text-green-600', icon: 'fas fa-heartbeat' },
+                { label: 'Социальные взносы (СФР)', value: totalOss, color: 'text-yellow-600', icon: 'fas fa-hand-holding-heart' },
+                { label: `Страхование от НС (${payrollData.insuranceRate * 100}%, СФР)`, value: totalInsurance, color: 'text-purple-600', icon: 'fas fa-shield-alt' },
+                { label: 'Итого налогов и взносов', value: totalNdfl + totalOps + totalOms + totalOss + totalInsurance, color: 'text-gray-800 font-bold', icon: 'fas fa-calculator' },
+                { label: 'Сотрудникам на руки (итого)', value: totalEmployeeNet, color: 'text-green-800 font-bold', icon: 'fas fa-hand-holding-usd' }
+            ];
+            
+            summaryItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center py-2 md:py-3 border-b border-gray-100';
+                div.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="${item.icon} ${item.color} mr-2 text-xs md:text-sm"></i>
+                        <span class="${item.color} text-xs md:text-sm">${item.label}:</span>
+                    </div>
+                    <span class="${item.color} font-medium text-xs md:text-sm">${item.value.toLocaleString('ru-RU')} ₽</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Инициализация всех компонентов
+        document.addEventListener('DOMContentLoaded', function() {
+            renderPaymentsTimeline();
+            renderSalaryChart();
+            renderEmployeeDetails();
+            renderTaxChart();
+            renderTaxSummary();
+        });
+    </script>
+</body>
+</html>

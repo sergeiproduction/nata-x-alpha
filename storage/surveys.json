@@ -1,0 +1,569 @@
+{
+  "survey_bank_account": {
+    "title": "Открытие расчетного счета",
+    "premium_only": false,
+    "tags": ["I этап"],
+    "questions": [
+      {
+        "id": "q1",
+        "text": "Вы уже определились с тарифом для расчетного счета?",
+        "answers": [
+          {
+            "id": "a1",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Отлично! При открытии счета выберите подходящий тариф в Альфа-Бизнес Онлайн"]
+              }
+            }
+          },
+          {
+            "id": "a2",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Рекомендуем рассмотреть тариф 'Старт' для начинающего бизнеса - от 600 ₽/мес с бесплатными платежами и выгодными условиями"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Планируете ли вы открывать счет онлайн?",
+        "answers": [
+          {
+            "id": "a3",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Онлайн-открытие счета доступно 24/7 через Альфа-Бизнес Онлайн. Процесс занимает 15-30 минут"]
+              }
+            }
+          },
+          {
+            "id": "a4",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Вы можете открыть счет в любом отделении Альфа-Банка. Рекомендуем записаться заранее через сайт банка"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a1",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a2",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a3",
+        "to_question_id": null
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a4",
+        "to_question_id": null
+      }
+    ]
+  },
+  "survey_online_services": {
+    "title": "Онлайн-сервисы для бизнеса",
+    "premium_only": false,
+    "tags": ["I этап"],
+    "questions": [
+      {
+        "id": "q1",
+        "text": "Планируете ли вы использовать Альфа-Бизнес Онлайн?",
+        "answers": [
+          {
+            "id": "a1",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Отличный выбор! Альфа-Бизнес Онлайн позволяет управлять счетами, платить налоги и отслеживать операции 24/7"]
+              }
+            }
+          },
+          {
+            "id": "a2",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Рекомендуем подключить - это бесплатно и значительно упрощает управление финансами бизнеса"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Нужен ли вам мобильный банк для бизнеса?",
+        "answers": [
+          {
+            "id": "a3",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Приложение 'Альфа-Бизнес' доступно в App Store и Google Play. Поддерживает биометрическую авторизацию для безопасности"]
+              }
+            }
+          },
+          {
+            "id": "a4",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Мобильный банк полезен для оперативного контроля счетов и быстрых платежей в любое время"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a1",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a2",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a3",
+        "to_question_id": null
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a4",
+        "to_question_id": null
+      }
+    ]
+  },
+  "survey_accounting": {
+    "title": "Бухгалтерский учет",
+    "premium_only": false,
+    "tags": ["I этап"],
+    "questions": [
+      {
+        "id": "q1",
+        "text": "Планируете ли вы использовать бухгалтерский сервис Альфа-Банка?",
+        "answers": [
+          {
+            "id": "a1",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Бухгалтерский сервис за 600 ₽/мес включает расчет налогов, формирование отчетности и сверку с налоговой"]
+              }
+            }
+          },
+          {
+            "id": "a2",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Рекомендуем рассмотреть - сервис автоматизирует учет и помогает избежать ошибок в отчетности"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Нужна ли вам помощь в выборе налогового режима?",
+        "answers": [
+          {
+            "id": "a3",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Для микробизнеса обычно оптимальны УСН 6% (доходы) или УСН 15% (доходы-расходы). Консультант банка поможет выбрать лучший вариант"]
+              }
+            }
+          },
+          {
+            "id": "a4",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Убедитесь, что выбранный режим соответствует вашему бизнесу. При необходимости можно получить консультацию в отделении"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a1",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a2",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a3",
+        "to_question_id": null
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a4",
+        "to_question_id": null
+      }
+    ]
+  },
+  "survey_payments": {
+    "title": "Прием платежей",
+    "premium_only": false,
+    "tags": ["II этап"],
+    "questions": [
+      {
+        "id": "q1",
+        "text": "Планируете ли вы принимать оплату картами?",
+        "answers": [
+          {
+            "id": "a1",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Рекомендуем подключить торговый эквайринг Альфа-Банка. Комиссия зависит от оборота, доступны выгодные условия для стартапов"]
+              }
+            }
+          },
+          {
+            "id": "a2",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Для онлайн-бизнеса рассмотрите интернет-эквайринг. Для услуг - платежные ссылки и QR-коды"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Есть ли у вас интернет-магазин?",
+        "answers": [
+          {
+            "id": "a3",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Подключите интернет-эквайринг Альфа-Банка. Интегрируется с популярными CMS, включает защиту от мошенничества"]
+              }
+            }
+          },
+          {
+            "id": "a4",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Для приема онлайн-платежей доступны платежные виджеты и API для интеграции с сайтом"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a1",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a2",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a3",
+        "to_question_id": null
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a4",
+        "to_question_id": null
+      }
+    ]
+  },
+  "survey_financing": {
+    "title": "Финансирование бизнеса",
+    "premium_only": false,
+    "tags": ["II этап"],
+    "questions": [
+      {
+        "id": "q1",
+        "text": "Нужен ли вам кредит для развития бизнеса?",
+        "answers": [
+          {
+            "id": "a1",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Альфа-Банк предлагает кредиты на пополнение оборотных средств, овердрафт к счету и инвестиционные кредиты"]
+              }
+            }
+          },
+          {
+            "id": "a2",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Рекомендуем рассмотреть овердрафт - кредитный лимит к расчетному счету для покрытия кассовых разрывов"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Интересуют ли вас бизнес-карты?",
+        "answers": [
+          {
+            "id": "a3",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Доступны дебетовые и кредитные бизнес-карты с кешбэком до 3%, страховками и льготным периодом"]
+              }
+            }
+          },
+          {
+            "id": "a4",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Бизнес-карты помогают разделять личные и рабочие расходы, контролировать траты сотрудников"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a1",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a2",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a3",
+        "to_question_id": null
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a4",
+        "to_question_id": null
+      }
+    ]
+  },
+  "survey_payroll": {
+    "title": "Зарплатный проект",
+    "premium_only": false,
+    "tags": ["II этап"],
+    "questions": [
+      {
+        "id": "q1",
+        "text": "Планируете ли вы нанимать сотрудников?",
+        "answers": [
+          {
+            "id": "a1",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Рекомендуем подключить зарплатный проект Альфа-Банка. Снижает комиссии за переводы, автоматизирует расчеты"]
+              }
+            }
+          },
+          {
+            "id": "a2",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["При найме первого сотрудника рассмотрите зарплатный проект - упрощает кадровый учет и выплаты"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Нужны ли вам HR-сервисы?",
+        "answers": [
+          {
+            "id": "a3",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Доступны электронный документооборот с сотрудниками, облачная кадровая отчетность, интеграция с HR-системами"]
+              }
+            }
+          },
+          {
+            "id": "a4",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["HR-сервисы помогают автоматизировать кадровое делопроизводство и сократить административную нагрузку"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a1",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a2",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a3",
+        "to_question_id": null
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a4",
+        "to_question_id": null
+      }
+    ]
+  },
+  "survey_investments": {
+    "title": "Инвестиции и сбережения",
+    "premium_only": false,
+    "tags": ["II этап"],
+    "questions": [
+      {
+        "id": "q1",
+        "text": "Есть ли у компании свободные денежные средства?",
+        "answers": [
+          {
+            "id": "a1",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Рекомендуем рассмотреть корпоративные депозиты или инвестиции в облигации через брокерский счет Альфа-Банка"]
+              }
+            }
+          },
+          {
+            "id": "a2",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["При появлении свободных средств депозиты от 50 000 ₽ помогут получать дополнительный доход с минимальными рисками"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "q2",
+        "text": "Интересует ли вас инвестирование для бизнеса?",
+        "answers": [
+          {
+            "id": "a3",
+            "text": "Да",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Доступны корпоративные брокерские счета, структурные продукты, доверительное управление"]
+              }
+            }
+          },
+          {
+            "id": "a4",
+            "text": "Нет",
+            "action": {
+              "type": "send_message",
+              "payload": {
+                "text": ["Инвестиции помогают диверсифицировать финансовые активы компании и получать дополнительный доход"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a1",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q1",
+        "condition_answer_id": "a2",
+        "to_question_id": "q2"
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a3",
+        "to_question_id": null
+      },
+      {
+        "from_question_id": "q2",
+        "condition_answer_id": "a4",
+        "to_question_id": null
+      }
+    ]
+  }
+}
