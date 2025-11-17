@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Документация по боту NataXAlpha</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#60a5fa',
+                        accent: '#f59e0b',
+                        dark: '#0f172a',
+                        darker: '#0a0f1f',
+                        card: '#1e293b',
+                        light: '#e2e8f0',
+                        gray: '#94a3b8',
+                        border: '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab-active {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tab-inactive {
+            background: rgba(51, 65, 85, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-dark to-darker text-light min-h-screen">
+    <header class="glass-effect border-b border-border p-6">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="text-center md:text-left mb-4 md:mb-0">
+                <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">NataXAlpha</h1>
+                <p class="text-gray mt-2">Бот-помощник для консультации бизнес-клиентов Альфа-банка</p>
+            </div>
+            <a href="https://t.me/nataxalpha_bot" target="_blank" class="bg-accent hover:bg-amber-500 text-darker font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                Запустить в Telegram
+            </a>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex overflow-x-auto mb-6 glass-effect rounded-t-lg border border-border">
+            <button class="tab-active px-6 py-4 font-medium text-white flex-shrink-0" data-tab="about">О проекте</button>
+            <button class="tab-inactive px-6 py-4 font-medium text-gray hover:text-light flex-shrink-0" data-tab="features">Функции</button>
+            <button class="tab-inactive px-6 py-4 font-medium text-gray hover:text-light flex-shrink-0" data-tab="faq">FAQ</button>
+            <button class="tab-inactive px-6 py-4 font-medium text-gray hover:text-light flex-shrink-0" data-tab="checklists">Чек-листы</button>
+            <button class="tab-inactive px-6 py-4 font-medium text-gray hover:text-light flex-shrink-0" data-tab="tech">Технологии</button>
+            <button class="tab-inactive px-6 py-4 font-medium text-gray hover:text-light flex-shrink-0" data-tab="future">Развитие</button>
+            <button class="tab-inactive px-6 py-4 font-medium text-gray hover:text-light flex-shrink-0" data-tab="demo">Демонстрация</button>
+        </div>
+
+        <div id="about-content" class="tab-content active glass-effect rounded-b-lg border border-border p-8">
+            <h2 class="text-2xl font-bold mb-6 pb-3 border-b border-border text-primary">О проекте</h2>
+            <p class="mb-4">Проект представляет собой комплексное решение для клиентов Альфа-Банка, ведущих микробизнес. Платформа помогает эффективно управлять финансами компании, подбирать оптимальные банковские продукты и автоматизировать бизнес-процессы.</p>
+            <p>Бот NataXAlpha интегрирован в мессенджер Telegram и предоставляет персонализированные рекомендации, основанные на текущем состоянии вашего бизнеса и его потребностях.</p>
+            
+            <div class="mt-6 p-4 bg-gradient-to-r from-card to-darker rounded-lg border border-border">
+                <h3 class="text-xl font-semibold mb-3 text-accent">Copilot-приложение</h3>
+                <p>Проект NataXAlpha был разработан как Copilot-приложение в рамках хакатона Альфа-банка. Целью было создание интеллектуального помощника, который бы помогал бизнес-клиентам банка принимать обоснованные финансовые решения и упрощать взаимодействие с банковскими продуктами.</p>
+            </div>
+        </div>
+
+        <div id="features-content" class="tab-content glass-effect rounded-lg border border-border p-8 hidden">
+            <h2 class="text-2xl font-bold mb-6 pb-3 border-b border-border text-primary">Основные функции</h2>
+            
+            <h3 class="text-xl font-semibold mb-4 text-secondary">Опросники и рекомендации</h3>
+            <p class="mb-6">Бот использует персональные опросники для подбора банковских продуктов, соответствующих специфике вашего бизнеса. На основе ваших ответов формируются рекомендации по оптимальным решениям.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">I этап - стартовые услуги</h4>
+                    <p>Открытие счета, настройка бухгалтерского учета, подбор тарифов</p>
+                </div>
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">II этап - развитие бизнеса</h4>
+                    <p>Подключение эквайринга, рассмотрение кредитных продуктов, инвестиционные предложения</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="faq-content" class="tab-content glass-effect rounded-lg border border-border p-8 hidden">
+            <h2 class="text-2xl font-bold mb-6 pb-3 border-b border-border text-primary">Система FAQ</h2>
+            <p class="mb-6">Бот содержит обширную базу знаний по всем продуктам Альфа-Банка, организованную по следующим категориям:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Основные категории</h4>
+                    <ul class="mt-2 space-y-2">
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Открытие расчетного счета</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Тарифы и обслуживание</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Интернет-банк и мобильное приложение</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Платежи и переводы</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Эквайринг и прием платежей</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Финансовые продукты</h4>
+                    <ul class="mt-2 space-y-2">
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Кредитные продукты</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Инвестиционные сервисы</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Зарплатный проект и HR</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Валютные операции</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Депозиты и сбережения</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Поддержка и безопасность</h4>
+                    <ul class="mt-2 space-y-2">
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Безопасность</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent mr-2">•</span>
+                            <span>Техническая поддержка</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3 class="text-xl font-semibold mt-8 mb-4 text-secondary">Примеры часто задаваемых вопросов:</h3>
+            <div class="space-y-4">
+                <div class="p-4 glass-effect rounded-lg border border-border">
+                    <p class="font-semibold text-secondary mb-2">Как открыть расчетный счет для ИП?</p>
+                    <p>Бот проведет вас через пошаговый процесс открытия счета, предоставит список необходимых документов и поможет выбрать оптимальный тариф.</p>
+                </div>
+                <div class="p-4 glass-effect rounded-lg border border-border">
+                    <p class="font-semibold text-secondary mb-2">Какие тарифы доступны для малого бизнеса?</p>
+                    <p>Система предоставит информацию о действующих тарифах, их преимуществах и условиях подключения с учетом вашего типа бизнеса.</p>
+                </div>
+                <div class="p-4 glass-effect rounded-lg border border-border">
+                    <p class="font-semibold text-secondary mb-2">Как подключить эквайринг?</p>
+                    <p>Бот объяснит процесс подключения, требования к бизнесу и поможет выбрать подходящее оборудование или онлайн-решение.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="checklists-content" class="tab-content glass-effect rounded-lg border border-border p-8 hidden">
+            <h2 class="text-2xl font-bold mb-6 pb-3 border-b border-border text-primary">Чек-листы</h2>
+            <p class="mb-6">Для упрощения выполнения сложных задач бот предоставляет пошаговые инструкции в виде чек-листов:</p>
+            <ul class="space-y-3 mt-4">
+                <li class="flex items-start">
+                    <span class="text-accent text-xl mr-3">✓</span>
+                    <span>Пошаговые инструкции для подключения услуг</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-accent text-xl mr-3">✓</span>
+                    <span>Отслеживание прогресса выполнения задач</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-accent text-xl mr-3">✓</span>
+                    <span>Автоматические напоминания о следующих шагах</span>
+                </li>
+            </ul>
+            <p class="mt-6">Чек-листы помогают структурировать процесс подключения банковских услуг и не упустить важные детали.</p>
+        </div>
+
+        <div id="tech-content" class="tab-content glass-effect rounded-lg border border-border p-8 hidden">
+            <h2 class="text-2xl font-bold mb-6 pb-3 border-b border-border text-primary">Технологические особенности</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Нейроинтерфейс</h4>
+                    <p>Бот использует технологию нейроинтерфейса для вызова методов и обработки пользовательских запросов. Это собственная разработка нашего стартапа, которая обеспечивает интеллектуальное взаимодействие с пользователем и точное выполнение запрашиваемых операций.</p>
+                </div>
+                
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">RAG модуль</h4>
+                    <p>Для расширения возможностей поиска и предоставления информации бот может использовать RAG (Retrieval-Augmented Generation) модуль, который позволяет осуществлять семантический поиск по базе знаний и документации.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="future-content" class="tab-content glass-effect rounded-lg border border-border p-8 hidden">
+            <h2 class="text-2xl font-bold mb-6 pb-3 border-b border-border text-primary">Дальнейшее развитие</h2>
+            <p class="mb-6">В перспективе планируется интеграция бота с полным спектром бизнес-сервисов Альфа-банка для создания единой экосистемы взаимодействия. Это позволит автоматизировать большинство бизнес-процессов и обеспечить бесшовное взаимодействие с банковскими продуктами.</p>
+            
+            <h3 class="text-xl font-semibold mb-4 text-secondary">Потенциальные интеграции:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Эквайринг</h4>
+                    <p>Управление эквайрингом через бота, отслеживание транзакций, настройка параметров приема платежей</p>
+                </div>
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Сервис бухгалтерии</h4>
+                    <p>Интеграция с бухгалтерскими сервисами, автоматическая генерация отчетов, напоминания о сроках сдачи отчетности</p>
+                </div>
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Кредитование</h4>
+                    <p>Подача заявок на кредиты, отслеживание статуса, управление графиком платежей</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Шаблонизатор документов</h4>
+                    <p>Генерация юридических документов, договоров и форм по шаблонам, адаптированным под ваш бизнес</p>
+                </div>
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Напоминания и уведомления</h4>
+                    <p>Ежедневные напоминания о важных событиях, сроках оплаты, налоговых периодах и других бизнес-мероприятиях</p>
+                </div>
+                <div class="feature-card glass-effect rounded-lg p-6 border border-border">
+                    <h4 class="text-lg font-semibold mb-3 text-primary">Сдача отчетности</h4>
+                    <p>Интеграция с государственными структурами для автоматической сдачи отчетности, уведомлений и других обязательных документов</p>
+                </div>
+            </div>
+            
+            <p class="mt-6">Такая интеграция позволит бизнесу получать полный контроль над своими процессами через единый интерфейс, упрощая взаимодействие с банком и повышая эффективность управления.</p>
+        </div>
+
+        <div id="demo-content" class="tab-content glass-effect rounded-lg border border-border p-8 hidden">
+            <h2 class="text-2xl font-bold mb-6 pb-3 border-b border-border text-primary">Демонстрация работы</h2>
+            <p class="mb-4">Исходный код нейроинтерфейса не включен в публичный репозиторий, однако вы можете ознакомиться с его работой в составе бота по ссылке:</p>
+            <p class="mb-6"><a href="https://t.me/nataxalpha_bot" target="_blank" class="text-accent font-bold hover:underline">https://t.me/nataxalpha_bot</a></p>
+            <p>Бот демонстрирует интеграцию нейроинтерфейса для обработки бизнес-запросов, подбора финансовых продуктов и предоставления персонализированных рекомендаций для клиентов Альфа-Банка.</p>
+        </div>
+    </div>
+
+    <footer class="text-center py-8 text-gray">
+        <div class="container mx-auto">
+            <p>© 2025 NataXAlpha - Бот-помощник для бизнес-клиентов Альфа-банка</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('[data-tab]');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Удаляем активный класс у всех вкладок
+                    tabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
+                    });
+                    tabContents.forEach(c => c.classList.add('hidden'));
+                    
+                    // Добавляем активный класс к текущей вкладке
+                    tab.classList.remove('tab-inactive');
+                    tab.classList.add('tab-active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
